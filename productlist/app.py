@@ -1,4 +1,6 @@
-from flask import Flask
+from flask import Flask, render_template
+
+from productlist.reqres import list_products
 
 
 def create_app():
@@ -6,5 +8,10 @@ def create_app():
 
     @app.route("/")
     def hello():
-        return "Hello World!"
+        products = list_products()
+        return render_template(
+            'product-list.html',
+            title='Changes',
+            products=products,
+        )
     return app
