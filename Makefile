@@ -2,6 +2,12 @@ export FLASK_APP=productlist:create_app()
 
 default: test
 
+bootstrap:
+	./scripts/bootstrap_cloud_build.sh
+
+deploy:
+	./scripts/deploy.sh
+
 init:
 	pipenv --venv || pipenv install -d
 
