@@ -1,6 +1,6 @@
 
 ## 1. Prerequisites 
-1. `gcloud` should be installed.
+1. `gcloud`, `git` and `docker` should be installed.
 1. This stack requires one GCP project
 
 
