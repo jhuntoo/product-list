@@ -3,7 +3,7 @@
 set -euox pipefail
 
 gcloud config set project "${GCP_PROJECT}"
-gcloud services enable cloudbuild.googleapis.com serviceusage.googleapis.com cloudresourcemanager.googleapis.com
+gcloud services enable cloudbuild.googleapis.com serviceusage.googleapis.com cloudresourcemanager.googleapis.com monitoring.googleapis.com
 
 TF_STATE_BUCKET="gs://${BUCKET_PREFIX}-tfstate"
 CLOUDBUILD_STAGING_BUCKET="gs://${BUCKET_PREFIX}-cloudbuild"
