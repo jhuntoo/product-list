@@ -1,0 +1,54 @@
+options:
+  env:
+    - 'TF_VAR_stack_prefix=$_STACK_PREFIX'
+    - 'TF_VAR_gcp_project=$_GCP_PROJECT'
+steps:
+  - id: 'tf apply'
+    name: 'hashicorp/terraform:0.13.5'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        apk add bash
+        cd terraform
+        terraform init -reconfigure -backend-config="bucket=$_BUCKET_PREFIX-tfstate"
+        terraform apply -auto-approve --var-file=vars.tfvars
+  - id: 'build docker image'
+    name: 'gcr.io/cloud-builders/docker'
+    args: [ 'build', '-t', 'eu.gcr.io/$PROJECT_ID/product-list:$BUILD_ID', '-f', 'Dockerfile', '.' ]
+  - id: 'push docker image'
+    name: 'gcr.io/cloud-builders/docker'
+    args: [ 'push', 'eu.gcr.io/$PROJECT_ID/product-list:$BUILD_ID' ]
+  - id: 'build helm'
+    name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        git clone https://github.com/GoogleCloudPlatform/cloud-builders-community.git
+        cd cloud-builders-community/helm
+        docker build -t eu.gcr.io/$PROJECT_ID/helm .
+        docker push eu.gcr.io/$PROJECT_ID/helm
+  - id: 'Configure a kubectl workspace for this project'
+    name: gcr.io/cloud-builders/kubectl
+    args:
+      - cluster-info
+    env:
+      - CLOUDSDK_COMPUTE_REGION=europe-west1
+      - CLOUDSDK_CONTAINER_CLUSTER=$_STACK_PREFIX-cluster
+      - KUBECONFIG=/workspace/.kube/config
+  # Deploy with Helm
+  - name: eu.gcr.io/$PROJECT_ID/helm
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        helm upgrade \
+          -i product-list \
+          --namespace product-list \
+          ./chart \
+          --set image.repository=eu.gcr.io/$PROJECT_ID/product-list,image.tag=$BUILD_ID \
+          -f ./chart/values.yaml
+    env:
+      - KUBECONFIG=/workspace/.kube/config
+      - TILLERLESS=true

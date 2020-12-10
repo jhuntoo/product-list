@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-list
+  labels:
+    app: product-list
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: product-list
+  template:
+    metadata:
+      labels:
+        app: product-list
+    spec:
+      containers:
+        - name: product-list
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - name: product-list
+              containerPort: 5000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: product-list
+              scheme: HTTP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: product-list
+              scheme: HTTP
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+          resources:
+            limits:
+              memory: "1024Mi"
+              cpu: "100m"
+            requests:
+              memory: "1024Mi"
+              cpu: "100m"
+      volumes:
+        - name: tmp-volume
+          emptyDir: { }

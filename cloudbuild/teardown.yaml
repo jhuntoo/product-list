@@ -1,0 +1,15 @@
+options:
+  env:
+    - 'TF_VAR_stack_prefix=$_STACK_PREFIX'
+    - 'TF_VAR_gcp_project=$_GCP_PROJECT'
+steps:
+  - id: 'tf apply'
+    name: 'hashicorp/terraform:0.13.5'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        apk add bash
+        cd terraform
+        terraform init -reconfigure -backend-config="bucket=$_BUCKET_PREFIX-tfstate"
+        terraform destroy

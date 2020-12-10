@@ -1,0 +1,6 @@
+replicaCount: 1
+
+image:
+  repository: gcr.io/<project_name>/product-list
+  tag: latest
+  pullPolicy: Always
