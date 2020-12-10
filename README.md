@@ -27,11 +27,10 @@
     watch kubectl get pods -n product-list
     ```
 
-## 4. Cleanup
+## 5. Cleanup
 This will teardowm the terraform managed resources, and remove most of the boostrapped automation as well
-*Warning*: this remove the IAM policy bindings from the <project id>@cloudbuild.gserviceaccount.com Service Account. The roles are `roles/editor`, `roles/iam.securityAdmin` and `roles/container.admin`. It's possible that these policy bindings may have already existed before running this project, so if that's the case and you wan't to keep them, comment out the relevant bits in (cleanup.sh)[./scripts/cleanup.sh] 
+*Warning*: this remove the IAM policy bindings from the `<project id>@cloudbuild.gserviceaccount.com` Service Account. The roles are `roles/editor`, `roles/iam.securityAdmin` and `roles/container.admin`. It's possible that these policy bindings may have already existed before running this project, so if that's the case and you want to keep them, comment out the relevant bits in (cleanup.sh)[./scripts/cleanup.sh] 
 
-1.
 ```
 make cleanup
 ```
