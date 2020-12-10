@@ -1,11 +1,14 @@
-FROM python:3.9.0-slim
-RUN apt-get update
+FROM python:alpine3.9
+RUN apk update \
+    && apk add build-base
 RUN pip install --upgrade pip
 RUN pip install pipenv
 
 
 WORKDIR /app
-COPY . /app
+COPY Pipfile /app
+COPY Pipfile.lock /app
+COPY productlist/ /app/productlist/
 RUN pipenv install --system --skip-lock
 
-CMD ["gunicorn", "--bind", ":5000", "productlist:create_app()"]
+CMD ["python3",   "productlist/app.py"]

@@ -1,5 +1,3 @@
-export FLASK_APP=productlist:create_app()
-
 default: test
 
 bootstrap:
@@ -24,4 +22,4 @@ test: init
 	pipenv run python -m pytest . --cov --cov-report term-missing
 
 run: init
-	FLASK_DEBUG=True pipenv run flask run
+	pipenv run python  productlist/app.py

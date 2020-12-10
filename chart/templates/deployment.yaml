@@ -38,11 +38,11 @@ spec:
               name: tmp-volume
           resources:
             limits:
-              memory: "1024Mi"
-              cpu: "100m"
+              memory: "256Mi"
+              cpu: "50m"
             requests:
-              memory: "1024Mi"
-              cpu: "100m"
+              memory: "256Mi"
+              cpu: "50m"
       volumes:
         - name: tmp-volume
           emptyDir: { }

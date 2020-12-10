@@ -4,9 +4,10 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
-gunicorn = "*"
-requests = "*"
+sanic = "*"
+jinja2 = "*"
+asyncio = "*"
+aiohttp = "*"
 
 [dev-packages]
 

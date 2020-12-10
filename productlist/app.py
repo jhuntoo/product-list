@@ -1,31 +1,79 @@
 from datetime import datetime
-from math import factorial
 
-from flask import Flask, render_template, Response
+import asyncio
+import aiohttp
+from sanic import Sanic, response
+from sanic.response import json as sanic_json
+from jinja2 import Template
+import json
 
-from productlist.reqres import list_products
+app = Sanic()
+
+html_template = '''
+<table>
+    <thead>
+    <th>Id</th>
+    <th>Name</th>
+    <th>Year</th>
+    <th>Color</th>
+    <th>pantone_value</th>
+    </thead>
+
+    <tbody>
+    {% for product in products %}
+    <tr>
+        <td>{{ product.id }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.year }}</td>
+        <td>{{ product.color }}</td>
+        <td>{{ product.pantone_value }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+'''
 
 
-def add_cpu_load():
+async def list_products():
+    current_page = 1
+    products = []
+    last_page_hit = False
+    while not last_page_hit:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"https://reqres.in/api/products/?page={current_page}") as r:
+                text = await r.text()
+                obj = json.loads(text)
+                products.extend(obj['data'])
+                last_page_hit = current_page == obj['total_pages']
+                current_page += 1
+    return products
+
+
+async def factorial(number):
+    f = 1
+    for i in range(2, number+1):
+        await asyncio.sleep(0.001)
+        f *= i
+
+
+async def add_cpu_load():
     start_time = datetime.now()
     while (datetime.now() - start_time).seconds < 1.5:
-        factorial(100)
+        await factorial(100)
 
 
-def create_app():
-    app = Flask(__name__)
+@app.route('/')
+async def index(request):
+    await add_cpu_load()
+    products = await list_products()
+    template = Template(html_template)
+    return response.html(template.render(products=products))
 
-    @app.route("/")
-    def index():
-        add_cpu_load()
-        products = list_products()
-        return render_template(
-            'product-list.html',
-            title='Changes',
-            products=products,
-        )
 
-    @app.route("/health")
-    def health():
-        return Response(status=200)
-    return app
+@app.route("/health")
+async def health(request):
+    return sanic_json(status=200)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+
