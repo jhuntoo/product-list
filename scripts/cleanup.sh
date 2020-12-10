@@ -7,6 +7,7 @@ SCRIPTS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 gcloud builds submit --config=cloudbuild/teardown.yaml \
   --gcs-source-staging-dir="gs://${STACK_PREFIX}-cloudbuild/source"  \
   --substitutions=_STACK_PREFIX="$STACK_PREFIX",_BUCKET_PREFIX="$BUCKET_PREFIX",_GCP_PROJECT="$GCP_PROJECT" \
+  --timeout=3600s \
   .
 
 TF_STATE_BUCKET="gs://${BUCKET_PREFIX}-tfstate"
