@@ -22,7 +22,7 @@ resource "google_container_cluster" "cluster" {
   provider = google-beta
   name     = "${var.stack_prefix}-cluster"
   location = var.region
-
+  min_master_version = var.master_version
   initial_node_count       = 1
   remove_default_node_pool = true
 
@@ -60,6 +60,7 @@ resource "google_container_node_pool" "main" {
   cluster  = random_string.np_name.*.keepers.cluster[count.index]
 
   initial_node_count = var.initial_node_count
+  version            = var.nodepool_version
 
   node_config {
     machine_type    = random_string.np_name.*.keepers.machine_type[count.index]
@@ -73,6 +74,10 @@ resource "google_container_node_pool" "main" {
     metadata = {
       disable-legacy-endpoints = "true"
     }
+  }
+
+  workload_metadata_config {
+    node_metadata = "GKE_METADATA_SERVER"
   }
 
   management {
