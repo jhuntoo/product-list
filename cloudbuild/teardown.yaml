@@ -9,7 +9,6 @@ steps:
     args:
       - '-c'
       - |
-        apk add bash
         cd terraform
         terraform init -reconfigure -backend-config="bucket=$_BUCKET_PREFIX-tfstate"
-        terraform destroy
+        terraform destroy -auto-approve --var-file=vars.tfvars

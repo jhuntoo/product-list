@@ -2,6 +2,7 @@ resource "kubernetes_namespace" "product_list" {
   metadata {
     name = "product-list"
   }
+  depends_on = [ google_container_node_pool.main ]
 }
 
 resource "kubernetes_service" "product_list" {
@@ -26,4 +27,6 @@ resource "kubernetes_service" "product_list" {
     type             = "LoadBalancer"
     load_balancer_ip = google_compute_address.default.address
   }
+
+  depends_on = [ kubernetes_namespace.product_list ]
 }
