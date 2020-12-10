@@ -71,9 +71,9 @@ resource "google_container_node_pool" "main" {
       preemptible = var.preemptible
     }
 
-    workload_metadata_config {
-      node_metadata = "GKE_METADATA_SERVER"
-    }
+//    workload_metadata_config {
+//      node_metadata = "GKE_METADATA_SERVER"
+//    }
 
     metadata = {
       disable-legacy-endpoints = "true"
