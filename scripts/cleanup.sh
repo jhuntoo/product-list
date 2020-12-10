@@ -10,8 +10,8 @@ gcloud builds submit --config=cloudbuild/teardown.yaml \
 TF_STATE_BUCKET="gs://${BUCKET_PREFIX}-tfstate"
 CLOUDBUILD_STAGING_BUCKET="gs://${BUCKET_PREFIX}-cloudbuild"
 
-gsutil rm -r gs://${CLOUDBUILD_STAGING_BUCKET}
-gsutil rm -r gs://${CLOUDBUILD_STAGING_BUCKET}
+gsutil rm -r -m ${TF_STATE_BUCKET}
+gsutil rm -r -m ${CLOUDBUILD_STAGING_BUCKET}
 
 CLOUDBUILD_SA="$(gcloud projects describe $GCP_PROJECT --format 'value(projectNumber)')@cloudbuild.gserviceaccount.com"
 gcloud projects remove-iam-policy-binding $GCP_PROJECT \
